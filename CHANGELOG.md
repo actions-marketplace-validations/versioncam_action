@@ -2,6 +2,12 @@
 
 What a user of the Action would want to know about each version, newest first. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and versions follow [semantic versioning](https://semver.org/). The tag `v1` always points at the newest 1.x.y release.
 
+## Unreleased
+
+### Changed
+
+- The Action's description, which the Marketplace listing shows, says what it asserts: the job fails, naming the control, when the app no longer matches a clip. Nothing the Action does has changed.
+
 ## [1.1.0] - 2026-10-07
 
 ### Added
