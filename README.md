@@ -1,5 +1,7 @@
 # Versioncam Action
 
+[![demo verified](https://img.shields.io/endpoint?url=https%3A%2F%2Fapi.version.cam%2Fv1%2Fbadge%2Fversioncam%2Faction&cacheSeconds=300)](https://clips.version.cam/versioncam/action)
+
 [Versioncam](https://version.cam) records short, true product videos: each clip is a script in your repository that drives your app in a real browser, so a video that no longer matches the app fails instead of quietly lying. This Action runs your repository's own versioncam in GitHub Actions, comments on the pull request when a clip breaks, uploads the videos, and publishes them to version.cam with GitHub's own token.
 
 ## Use it
