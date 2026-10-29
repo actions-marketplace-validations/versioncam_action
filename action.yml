@@ -1,5 +1,5 @@
 name: Versioncam
-description: Record, check and publish true product videos from your CI.
+description: Record product videos from scripts in your repo. The job fails, naming the control, when the app no longer matches a clip.
 author: Peter Bulovec
 branding:
   icon: video
