@@ -81,6 +81,54 @@ jobs:
             console.log(`checked ${check.clips.length} clip(s) with versioncam ${check.recorder}; rendered ${files.length} files`);
           '
 
+      # What the check recorded, for the publish job below, on main: the
+      # recordings alone, without the stability runs under `__`, kept a day.
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        with:
+          name: test-app-recordings
+          path: |
+            test-app/.versioncam/recordings
+            !test-app/.versioncam/recordings/__*
+          if-no-files-found: error
+          retention-days: 1
+
+  # On main, what the check recorded goes to version.cam, as a customer's
+  # push job sends it: this repository is then a project there,
+  # versioncam/action, with clips a stranger can open and a README badge
+  # that is true. A job of its own, with the one permission publish needs:
+  # any step of a job with id-token: write can ask GitHub for the token
+  # version.cam accepts, an install script included, so this job installs
+  # the test app without its scripts and takes the recordings from the job
+  # above, which ran them.
+  publish:
+    name: Publish the test app's clips to version.cam
+    needs: test-app
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # GitHub's token for version.cam, so no secret is stored
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22
+      - name: Install the test app, without its scripts
+        working-directory: test-app
+        run: npm ci --ignore-scripts
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: test-app-recordings
+          path: test-app/.versioncam/recordings
+      - name: Publish
+        uses: ./
+        with:
+          mode: publish
+          working-directory: test-app
+
   # publish without `id-token: write` must stop at once with one sentence.
   # Nothing is installed: the Action checks the job's permissions before it
   # looks for versioncam, so this job needs neither npm nor the service.
