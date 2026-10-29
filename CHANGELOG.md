@@ -2,11 +2,14 @@
 
 What a user of the Action would want to know about each version, newest first. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and versions follow [semantic versioning](https://semver.org/). The tag `v1` always points at the newest 1.x.y release.
 
-## Unreleased
+## [1.1.1] - 2026-10-29
+
+Nothing the Action does has changed. This is the release that lists it in the GitHub Marketplace.
 
 ### Changed
 
-- The Action's description, which the Marketplace listing shows, says what it asserts: the job fails, naming the control, when the app no longer matches a clip. Nothing the Action does has changed.
+- The Action's description, which the Marketplace listing shows, says what it asserts: the job fails, naming the control, when the app no longer matches a clip.
+- The README opens with the badge version.cam draws for this repository's own test app, "demo verified · commit · age", and this repository's CI publishes that app's clip on every push to main, as a customer's would.
 
 ## [1.1.0] - 2026-10-07
 
