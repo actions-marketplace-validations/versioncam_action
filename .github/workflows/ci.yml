@@ -104,6 +104,33 @@ jobs:
   # version.cam accepts, an install script included, so this job installs
   # the test app without its scripts and takes the recordings from the job
   # above, which ran them.
+  # The same check on the image Playwright 1.59 does not know, Ubuntu 26.04,
+  # which GitHub's ubuntu-latest became in October 2026: the install step's
+  # fallback (action.yml) is what makes this job pass.
+  test-app-26:
+    name: The Action on its test app, on ubuntu-26.04
+    runs-on: ubuntu-26.04
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22
+      - name: Install the test app
+        working-directory: test-app
+        run: npm ci
+      - name: Check
+        id: check
+        uses: ./
+        with:
+          working-directory: test-app
+          comment: "false"
+      - name: The check passed on an OS Playwright refused
+        env:
+          CHECK_RESULT: ${{ steps.check.outputs.result }}
+        run: test "$CHECK_RESULT" = pass
+
   publish:
     name: Publish the test app's clips to version.cam
     needs: test-app
