@@ -99,8 +99,24 @@ runs:
       env:
         VERSIONCAM_ACTION_BIN: ${{ steps.setup.outputs.bin }}
       run: |
-        # versioncam install --with-deps: the Chromium this versioncam records with, and its system libraries
-        "$VERSIONCAM_ACTION_BIN" install --with-deps
+        # versioncam install --with-deps: the Chromium this versioncam records with, and its system libraries.
+        # Playwright knows the Ubuntu releases of its day and refuses a newer one outright (GitHub's
+        # ubuntu-latest is 26.04 since October 2026, which Playwright 1.59 does not know). Where it
+        # refuses, the installer runs again told the host is ubuntu24.04, the newest it knows, whose build
+        # and libraries record the same. versioncam 0.5.3 does this by itself; this is for the versions before.
+        set +e
+        output=$("$VERSIONCAM_ACTION_BIN" install --with-deps 2>&1 | tee /dev/stderr)
+        code=$?
+        set -e
+        if [ "$code" -ne 0 ] && [ -z "${PLAYWRIGHT_HOST_PLATFORM_OVERRIDE:-}" ] \
+           && [[ "$output" =~ does\ not\ support\ [^\ ]+\ on\ ubuntu([0-9]+)\.([0-9]+)-([a-z0-9]+) ]] \
+           && { [ "${BASH_REMATCH[1]}" -gt 24 ] || { [ "${BASH_REMATCH[1]}" -eq 24 ] && [ "${BASH_REMATCH[2]}" -gt 4 ]; }; }; then
+          as="ubuntu24.04-${BASH_REMATCH[3]}"
+          echo "::notice::Playwright does not know this runner's OS yet; installing as $as, the newest Ubuntu it does, whose build and libraries record the same. Name ubuntu-24.04 in runs-on to pin the image."
+          PLAYWRIGHT_HOST_PLATFORM_OVERRIDE="$as" "$VERSIONCAM_ACTION_BIN" install --with-deps
+        elif [ "$code" -ne 0 ]; then
+          exit "$code"
+        fi
 
     - name: Run versioncam
       id: run
