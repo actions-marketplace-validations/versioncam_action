@@ -2,6 +2,18 @@
 
 What a user of the Action would want to know about each version, newest first. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and versions follow [semantic versioning](https://semver.org/). The tag `v1` always points at the newest 1.x.y release.
 
+## [1.1.2] - 2026-10-31
+
+The install step survives GitHub's move of `ubuntu-latest` to Ubuntu 26.04. Nothing else changes.
+
+### Fixed
+
+- The browser installs on a runner whose Ubuntu is newer than versioncam's Playwright knows, which GitHub's `ubuntu-latest` has been since it became 26.04 in October 2026. Where Playwright refuses the OS outright, the Action runs the installer again told the host is `ubuntu24.04`, the newest it knows, whose build and libraries record the same, and says so in a notice. versioncam 0.5.3 does this by itself; the Action does it for the versions before.
+
+### Changed
+
+- The README's workflows run on `ubuntu-24.04`, not `ubuntu-latest`: GitHub's latest became Ubuntu 26.04 in late October 2026, where Playwright 1.59 has no list of system libraries and `versioncam install --with-deps` fails. A named image is also part of the pin a recording's bytes depend on. This repository's own CI runs on it too.
+
 ## [1.1.1] - 2026-10-29
 
 Nothing the Action does has changed. This is the release that lists it in the GitHub Marketplace.

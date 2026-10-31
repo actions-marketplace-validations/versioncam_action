@@ -20,7 +20,7 @@ jobs:
   # On a pull request: record every clip, and fail with a comment if one broke.
   check:
     if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
       pull-requests: write # to comment when a clip breaks
@@ -36,7 +36,7 @@ jobs:
   # On main: record every clip, then publish the recordings to version.cam.
   publish:
     if: github.event_name == 'push'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
       id-token: write # GitHub's token for version.cam, so no secret is stored
@@ -56,6 +56,8 @@ jobs:
 
 In both jobs the Action runs first in its default mode, `check`: it records every clip, at full quality, and fails the job when one no longer matches the app. `publish` records nothing itself. It sends what the check recorded, a failure included, so version.cam knows when a clip broke.
 
+The jobs name `ubuntu-24.04`, not `ubuntu-latest`, on purpose. The bytes a recording comes out as depend on the runner image, so a named image is part of the pin; and since late October 2026 GitHub's `ubuntu-latest` is Ubuntu 26.04, for which Playwright 1.59 has no list of system libraries, so `versioncam install --with-deps` stops there with "Playwright does not support chromium-headless-shell on ubuntu26.04-x64".
+
 In a monorepo, install the app's dependencies where they live, and point the Action at the app with `working-directory: apps/web`.
 
 ### Pin the browser too
@@ -63,7 +65,7 @@ In a monorepo, install the app's dependencies where they live, and point the Act
 versioncam pins its Playwright, and two runs on one runner image produce the same bytes. To pin the browser build, the fonts and the system libraries as well, run the job in the Playwright image for the version your versioncam pins (`npm ls playwright` names it). The browser is already in the image, so skip the install:
 
 ```yaml
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     container: mcr.microsoft.com/playwright:v1.59.1-noble
     steps:
       # ...
