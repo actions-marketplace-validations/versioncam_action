@@ -12,7 +12,10 @@ permissions:
 jobs:
   scripts:
     name: The scripts' tests
-    runs-on: ubuntu-latest
+    # ubuntu-24.04, not ubuntu-latest: the recorder's bytes depend on the image,
+    # and GitHub's latest became 26.04 in October 2026, where Playwright 1.59 has
+    # no system-library list, so versioncam install --with-deps stops there.
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
@@ -25,7 +28,7 @@ jobs:
   # renames the button, the check fails here and comments on its pull request.
   test-app:
     name: The Action on its test app
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
       pull-requests: write # the comment on a failing check
@@ -105,7 +108,7 @@ jobs:
     name: Publish the test app's clips to version.cam
     needs: test-app
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
       id-token: write # GitHub's token for version.cam, so no secret is stored
@@ -134,7 +137,7 @@ jobs:
   # looks for versioncam, so this job needs neither npm nor the service.
   publish-without-permission:
     name: Publish without id-token stops
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: read # and no id-token: write, on purpose
     steps:
